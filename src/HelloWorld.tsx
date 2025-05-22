@@ -39,9 +39,7 @@ export const HelloWorld: React.FC = () => {
   return (
     <ComponentsProvider>
       <Space around>
-        <Span fontSize="xxxxxlarge">
-          {message}
-        </Span>
+        <Span fontSize="xxxxxlarge">{message}</Span>
       </Space>
     </ComponentsProvider>
   )

@@ -1,34 +1,43 @@
-// Copyright 2021 Google LLC
-
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-
-//     https://www.apache.org/licenses/LICENSE-2.0
-
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-/**
-  * This is a sample Looker Extension written in typescript and React. It imports one component, <HelloWorld>.
-  * HelloWorld makes a simple call to the Looker API using the Extension Framework's built in authentication,
-  * and returns the logged in user.
-*/
-import React from 'react'
-import { ComponentsProvider } from '@looker/components'
+import React, { useEffect, useState } from 'react'
+import { ComponentsProvider, Heading, Grid, Box, Card, Button } from '@looker/components'
+import { useLookerSDK } from './sdk/useLookerSDK';
+import { ILook } from '@looker/sdk';
 
 const App = () => {
+  const sdk = useLookerSDK();
+  const [looks, setLooks] = useState<ILook[]>([]);
+
+  useEffect(() => {
+    const fetchLooks = async () => {
+      // @ts-expect-error: Type mismatch between mock and real SDK
+      const sdkResp = await (sdk.ok ? sdk.ok(sdk.all_looks('id,title,description, model')) : sdk.all_looks());
+      const result = Array.isArray(sdkResp)
+        ? sdkResp
+        : (sdkResp && typeof sdkResp === 'object' && 'value' in sdkResp ? (sdkResp as { value: ILook[] }).value : []);
+      setLooks(result);
+    };
+    fetchLooks();
+  }, [sdk])
+
+  const addToDashboard = (look: ILook) => {
+    console.log(look);
+  }
+
   return (
     <ComponentsProvider>
-      <div style={{ padding: '2rem' }}>
-        <h1>Hello from Looker Extension</h1>
-        <p>This is your custom dashboard builder!</p>
-      </div>
+      <Box p="u12">
+        <Heading>Dashboard Builder</Heading>
+        <Grid gap='large'>
+{looks.map(look => (
+        <Card key={look.id} p="u4" border="#ff0000" raised>
+          <Heading fontSize="small">{look.title}</Heading>
+          <Button onClick={() => addToDashboard(look)}>Add</Button>
+        </Card>
+      ))}
+        </Grid>
+      </Box>
     </ComponentsProvider>
   )
 }
 
-export default App;
+export default App

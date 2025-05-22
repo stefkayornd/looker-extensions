@@ -24,11 +24,7 @@ module.exports = {
   module: {
     rules: [
       ...commonConfig.module.rules,
-      {
-        test: /\.(js|jsx|ts|tsx)?$/,
-        use: 'react-hot-loader/webpack',
-        include: /node_modules/,
-      },
+      // removed react-hot-loader rule, not needed for React 18
     ],
   },
   devServer: {
@@ -38,8 +34,7 @@ module.exports = {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers':
-        'X-Requested-With, content-type, Authorization',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
     },
   },
   plugins: [...commonConfig.plugins],

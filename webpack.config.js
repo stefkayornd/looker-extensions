@@ -12,37 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs')
+const path = require('path')
 
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 if (!process.env.POSTS_SERVER_URL) {
   // webpack 5 is stricter about environment variables. The POSTS_SERVER_URL
   // environment variable was not mentioned in the README so default it for
   // those developers who may have created a .env file without the variable.
-  process.env.POSTS_SERVER_URL = "http://127.0.0.1:3000";
+  process.env.POSTS_SERVER_URL = 'http://127.0.0.1:3000'
 }
 
 const PATHS = {
-  app: path.join(__dirname, "src/index.tsx"),
-};
+  app: path.join(__dirname, 'src/index.tsx'),
+}
 
 module.exports = {
   entry: {
     app: PATHS.app,
   },
   output: {
-    path: __dirname + "/dist",
-    filename: "bundle.js",
+    path: __dirname + '/dist',
+    filename: 'bundle.js',
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx|ts|tsx)$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules/,
         include: /src/,
         sideEffects: false,
@@ -50,18 +49,17 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: ['.tsx', '.ts', '.js'],
     fallback: { buffer: false },
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   plugins: [
     new BundleAnalyzerPlugin({
-      analyzerMode: process.env.ANALYZE_MODE || "disabled",
+      analyzerMode: process.env.ANALYZE_MODE || 'disabled',
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/index.html'),
       inject: 'body',
     }),
   ],
-};
-
+}

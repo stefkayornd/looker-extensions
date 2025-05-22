@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const commonConfig = require("./webpack.config");
+const commonConfig = require('./webpack.config')
 
 module.exports = {
   ...commonConfig,
-  mode: "production",
+  mode: 'production',
   optimization: {
-    chunkIds: "named",
+    chunkIds: 'named',
   },
-};
+}

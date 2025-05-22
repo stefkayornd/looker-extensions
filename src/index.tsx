@@ -12,15 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import App  from './App'
+import React, { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
 
 import { ExtensionProvider } from '@looker/extension-sdk-react'
 
-ReactDOM.render(
-  <ExtensionProvider>
-    <App />
-  </ExtensionProvider>,
-  document.getElementById('root')
-)
+const container = document.getElementById('root')
+const isLooker = window.location !== window.parent.location
+
+if (container) {
+  const root = ReactDOM.createRoot(container)
+  root.render(
+    <StrictMode>
+      {isLooker ? (
+        <ExtensionProvider>
+          <App />
+        </ExtensionProvider>
+      ) : (
+        <App />
+      )}
+    </StrictMode>
+  )
+}
