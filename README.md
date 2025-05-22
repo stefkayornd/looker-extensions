@@ -6,32 +6,32 @@ self-service-dashboard-builder is a Looker extension using React and TypeScript.
 
 1. Install the dependencies with [Yarn](https://yarnpkg.com/).
 
-    ```sh
-    yarn install
-    ```
+   ```sh
+   yarn install
+   ```
 
 2. Build the project
 
-    ```sh
-    yarn build
-    ```
+   ```sh
+   yarn build
+   ```
 
 3. Start the development server
 
-    ```sh
-    yarn develop
-    ```
+   ```sh
+   yarn dev
+   ```
 
-    The development server is now running and serving the JavaScript at https://localhost:5175/bundle.js.
+   The development server is now running and serving the JavaScript at https://localhost:5175/bundle.js.
 
 4. Now log in to Looker and create a new project.
 
-    Depending on the version of Looker, a new project can be created under:
+   Depending on the version of Looker, a new project can be created under:
 
-    - **Develop** => **Manage LookML Projects** => **New LookML Project**, or
-    - **Develop** => **Projects** => **New LookML Project**
+   - **Develop** => **Manage LookML Projects** => **New LookML Project**, or
+   - **Develop** => **Projects** => **New LookML Project**
 
-    Select "Blank Project" as the "Starting Point". This creates a new LookML project with no files.
+   Select "Blank Project" as the "Starting Point". This creates a new LookML project with no files.
 
 5. Create a `manifest` file
 
