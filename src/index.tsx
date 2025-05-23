@@ -15,8 +15,18 @@
 import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-
+import DashboardBuilderExtension from './DashboardBuilderExtension'
+import { ComponentsProvider } from '@looker/components'
+// import ThemedAppWrapper  from './providers/ThemedAppWrapper'
 import { ExtensionProvider } from '@looker/extension-sdk-react'
+
+const theme = {
+  // TODO we should map current theme from officernd/core-ui to the looker/components theme interface
+  colors: {
+    background: '#fff',
+    text: '#000',
+  },
+}
 
 const container = document.getElementById('root')
 const isLooker = window.location !== window.parent.location
@@ -25,13 +35,15 @@ if (container) {
   const root = ReactDOM.createRoot(container)
   root.render(
     <StrictMode>
-      {isLooker ? (
-        <ExtensionProvider>
+      <ComponentsProvider themeCustomizations={theme}>
+        {isLooker ? (
+          <ExtensionProvider>
+            <DashboardBuilderExtension />
+          </ExtensionProvider>
+        ) : (
           <App />
-        </ExtensionProvider>
-      ) : (
-        <App />
-      )}
+        )}
+      </ComponentsProvider>
     </StrictMode>
   )
 }

@@ -28,7 +28,7 @@ module.exports = {
     ],
   },
   devServer: {
-    port: 5175,
+    port: 8080,
     contentBase: __dirname + '/dist',
     index: 'index.html',
     headers: {
