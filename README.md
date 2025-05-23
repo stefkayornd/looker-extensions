@@ -1,6 +1,6 @@
 # Looker Extension self-service-dashboard-builder
 
-self-service-dashboard-builder is a Looker extension using React and TypeScript.
+Looker extensions is using React and TypeScript.
 
 ## Getting Started for Development
 

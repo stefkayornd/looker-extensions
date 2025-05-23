@@ -1,39 +1,68 @@
 import React, { useEffect, useState } from 'react'
-import { ComponentsProvider, Heading, Grid, Box, Card, Button } from '@looker/components'
-import { useLookerSDK } from './sdk/useLookerSDK';
-import { ILook } from '@looker/sdk';
+import { map } from 'lodash'
+import {
+  ComponentsProvider,
+  Heading,
+  Grid,
+  Box,
+  Card,
+  Button,
+  Table,
+  TableBody,
+  TableHead,
+  TableHeaderCell,
+  Fieldset,
+  TableRow,
+} from '@looker/components'
+import { useLookerSDK } from './sdk/useLookerSDK'
+import { ILook } from '@looker/sdk'
 
 const App = () => {
-  const sdk = useLookerSDK();
-  const [looks, setLooks] = useState<ILook[]>([]);
+  const sdk = useLookerSDK()
+  const [looks, setLooks] = useState<ILook[]>([])
+  const [selectedLookIds, setSelectedLookIds] = useState<number[]>([])
 
   useEffect(() => {
     const fetchLooks = async () => {
       // @ts-expect-error: Type mismatch between mock and real SDK
-      const sdkResp = await (sdk.ok ? sdk.ok(sdk.all_looks('id,title,description, model')) : sdk.all_looks());
+      const sdkResp = await (sdk.ok
+        ? sdk.ok(sdk.all_looks('id,title,description, model'))
+        : sdk.all_looks())
       const result = Array.isArray(sdkResp)
         ? sdkResp
-        : (sdkResp && typeof sdkResp === 'object' && 'value' in sdkResp ? (sdkResp as { value: ILook[] }).value : []);
-      setLooks(result);
-    };
-    fetchLooks();
+        : sdkResp && typeof sdkResp === 'object' && 'value' in sdkResp
+          ? (sdkResp as { value: ILook[] }).value
+          : []
+      setLooks(result)
+    }
+    fetchLooks()
   }, [sdk])
 
   const addToDashboard = (look: ILook) => {
-    console.log(look);
+    console.log(look)
   }
+
+  const toggleLook = (lookId: number) => {
+    setSelectedLookIds((prev) =>
+      prev.includes(lookId) ? prev.filter((id) => id !== lookId) : [...prev, lookId]
+    )
+  }
+
+  const renderLooksTable = () =>
+    map(looks, (look: ILook) => (
+      <Card key={look.id} p="u4" raised>
+        <Heading fontSize="small">{look.title}</Heading>
+        <Button onClick={() => toggleLook(Number(look.id))}>Add</Button>
+      </Card>
+    ))
 
   return (
     <ComponentsProvider>
       <Box p="u12">
-        <Heading>Dashboard Builder</Heading>
-        <Grid gap='large'>
-{looks.map(look => (
-        <Card key={look.id} p="u4" border="#ff0000" raised>
-          <Heading fontSize="small">{look.title}</Heading>
-          <Button onClick={() => addToDashboard(look)}>Add</Button>
-        </Card>
-      ))}
+        <Heading mb="u10">Dashboard Builder - Mocked view</Heading>
+
+        <Grid gap="large" columns={4}>
+          {renderLooksTable()}
         </Grid>
       </Box>
     </ComponentsProvider>
