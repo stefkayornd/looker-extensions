@@ -1,26 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { map } from 'lodash'
-import {
-  ComponentsProvider,
-  Heading,
-  Grid,
-  Box,
-  Card,
-  Button,
-  Table,
-  TableBody,
-  TableHead,
-  TableHeaderCell,
-  Fieldset,
-  TableRow,
-} from '@looker/components'
+import { ComponentsProvider, Heading, Grid, Box, Card, Button } from '@looker/components'
 import { useLookerSDK } from './sdk/useLookerSDK'
 import { ILook } from '@looker/sdk'
+import { useToast } from './sdk/useToast'
 
 const App = () => {
   const sdk = useLookerSDK()
   const [looks, setLooks] = useState<ILook[]>([])
   const [selectedLookIds, setSelectedLookIds] = useState<number[]>([])
+  const toast = useToast()
 
   useEffect(() => {
     const fetchLooks = async () => {
@@ -43,6 +32,7 @@ const App = () => {
   }
 
   const toggleLook = (lookId: number) => {
+    toast.success('Look added to dashboard!')
     setSelectedLookIds((prev) =>
       prev.includes(lookId) ? prev.filter((id) => id !== lookId) : [...prev, lookId]
     )

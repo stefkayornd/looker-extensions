@@ -14,21 +14,15 @@ import {
   SpaceVertical,
   Table,
   TableBody,
-  TableCell,
+  TableDataCell,
   TableHead,
   TableHeaderCell,
   TableRow,
-  TextInput,
-  useToast,
+  InputText,
 } from '@looker/components'
 import { ExtensionContext2 } from '@looker/extension-sdk-react'
-import type {
-  IDashboard,
-  ILook,
-  IDashboardElement,
-  IDashboardCreate,
-  IDashboardElementCreate,
-} from '@looker/sdk'
+import type { IDashboard, ILook, IDashboardElement, IDashboardBase } from '@looker/sdk'
+import { useToast } from './sdk/useToast'
 
 /**
  * Main entry component for the Looker Extension.
@@ -63,7 +57,7 @@ const DashboardBuilderExtension: React.FC = () => {
         setLooks(looksResp)
         setDashboards(dashboardsResp)
       } catch (err) {
-        toast.error({ description: 'Failed to load data' })
+        toast.error('Failed to load data')
         console.error(err)
       } finally {
         setLoading(false)
@@ -97,43 +91,43 @@ const DashboardBuilderExtension: React.FC = () => {
 
   const handleSaveDashboard = async () => {
     if (!newDashboardTitle.trim()) {
-      toast.error({ description: 'Please enter a dashboard title' })
+      toast.error('Please enter a dashboard title')
       return
     }
     if (selectedLookIds.length === 0) {
-      toast.error({ description: 'Select at least one Look' })
+      toast.error('Select at least one Look')
       return
     }
 
     try {
       setLoading(true)
       // 1) Create the dashboard shell
-      const draft: IDashboardCreate = {
+      const draft: IDashboardBase = {
         title: newDashboardTitle,
-        // Create in the user's personal space; adjust as needed
-        space_id: (await sdk.ok(sdk.me())).personal_space_id,
+        // space_id is not a valid property of IDashboardBase
       }
-      const created = await sdk.ok(sdk.create_dashboard(draft))
+      const created = await sdk.ok(
+        sdk.create_dashboard(draft, undefined, (await sdk.ok(sdk.me())).personal_space_id)
+      )
 
       // 2) Add dashboard elements for each selected look
       const elementPromises: Promise<IDashboardElement>[] = selectedLookIds.map(async (lookId) => {
-        const elem: IDashboardElementCreate = {
+        const elem = {
           dashboard_id: created.id,
           look_id: lookId,
           title: looks.find((l) => String(l.id) === String(lookId))?.title ?? 'Look',
         }
         return sdk.ok(sdk.create_dashboard_element(elem))
       })
-
       await Promise.all(elementPromises)
 
-      toast.success({ description: `Dashboard “${created.title}” saved!` })
+      toast.success(`Dashboard “${created.title}” saved`)
       // Refresh dashboard list
       const updated = await sdk.ok(sdk.all_dashboards({ fields: 'id,title' }))
       setDashboards(updated)
       closeBuilder()
     } catch (err) {
-      toast.error({ description: 'Failed to save dashboard' })
+      toast.error('Failed to save dashboard')
       console.error(err)
     } finally {
       setLoading(false)
@@ -147,10 +141,10 @@ const DashboardBuilderExtension: React.FC = () => {
     if (!window.confirm('Delete this dashboard permanently?')) return
     try {
       await sdk.ok(sdk.delete_dashboard(dashId))
-      toast.success({ description: 'Dashboard deleted' })
+      toast.success('Dashboard deleted')
       setDashboards((prev) => prev.filter((d) => d.id !== dashId))
     } catch (err) {
-      toast.error({ description: 'Failed to delete dashboard' })
+      toast.error('Failed to delete dashboard')
       console.error(err)
     }
   }
@@ -169,10 +163,10 @@ const DashboardBuilderExtension: React.FC = () => {
       <TableBody>
         {looks.map((look) => (
           <TableRow key={look.id} onClick={() => toggleLook(Number(look.id))}>
-            <TableCell>
+            <TableDataCell>
               <input type="checkbox" checked={selectedLookIds.includes(Number(look.id))} readOnly />
-            </TableCell>
-            <TableCell>{look.title}</TableCell>
+            </TableDataCell>
+            <TableDataCell>{look.title}</TableDataCell>
           </TableRow>
         ))}
       </TableBody>
@@ -241,7 +235,7 @@ const DashboardBuilderExtension: React.FC = () => {
             </Fieldset>
 
             <Fieldset legend="Step 3: Save" gap="u3">
-              <TextInput
+              <InputText
                 placeholder="Dashboard title"
                 value={newDashboardTitle}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
